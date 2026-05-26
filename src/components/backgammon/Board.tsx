@@ -152,19 +152,13 @@ export function Board(props: BoardProps) {
   const renderRow = (indices: number[], flipped: boolean) => (
     <div className="flex h-full">
       {indices.map((p, i) => {
-        const isBar = i === 6; // bar between 6th and 7th
         const light = (p + (flipped ? 1 : 0)) % 2 === 0;
         const highlight = legalDestinations.has(p) || legalBearOffSources.has(p);
         const selected = selectedFrom === p;
         return (
-          <>
-            {isBar && (
-              <div
-                key={`bar-${flipped}`}
-                className="w-3 h-full bg-board-frame shrink-0"
-              />
-            )}
-            <div key={p} className="flex-1 h-full min-w-0">
+          <div key={p} className="contents">
+            {i === 6 && <div className="w-3 h-full bg-board-frame shrink-0" />}
+            <div className="flex-1 h-full min-w-0">
               <Triangle
                 pointIndex={p}
                 flipped={flipped}
@@ -177,7 +171,7 @@ export function Board(props: BoardProps) {
                 onDoubleClick={() => legalBearOffSources.has(p) && onBearOff(p)}
               />
             </div>
-          </>
+          </div>
         );
       })}
     </div>
