@@ -93,25 +93,25 @@ export function GameReview({ result, onReplay }: Props) {
           </div>
         </div>
         <div>
-          {rows.map(({ label, you: y, opp: o, icon: Icon, color }) => {
+          {rows.map(({ label, you: y, opp: o, icon: Icon, text, bg }) => {
             const max = Math.max(y, o, 1);
             return (
               <div key={label} className="px-5 py-3 border-b border-border last:border-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <Icon className={`h-4 w-4 ${color}`} />
+                  <Icon className={`h-4 w-4 ${text}`} />
                   <span className="font-medium text-sm">{label}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 bg-surface-2 h-2 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${color.replace("text-", "bg-")} rounded-full`}
+                      className={`h-full ${bg} rounded-full`}
                       style={{ width: `${(y / max) * 100}%` }}
                     />
                   </div>
                   <span className="w-6 text-right text-sm font-mono">{y}</span>
                   <div className="flex-1 bg-surface-2 h-2 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${color.replace("text-", "bg-")} opacity-60 rounded-full`}
+                      className={`h-full ${bg} opacity-60 rounded-full`}
                       style={{ width: `${(o / max) * 100}%` }}
                     />
                   </div>
