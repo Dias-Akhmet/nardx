@@ -97,13 +97,31 @@ export function playMove(skin: SkinId) {
 export function playRoll(skin: SkinId) {
   const f = family(skin);
   if (f === "chip") {
-    for (let i = 0; i < 4; i++) tone(440 + i * 220, 0.05, "square", 0.1, i * 0.05);
+    // Crisp 8-bit dice tumble
+    for (let i = 0; i < 8; i++) {
+      tone(520 + Math.random() * 600, 0.04, "square", 0.09, i * 0.035);
+    }
+    tone(880, 0.08, "square", 0.1, 0.32);
   } else if (f === "wood") {
-    noise(0.35, 0.4, 0, 1400);
-    noise(0.2, 0.3, 0.1, 900);
+    // ASMR wooden dice shake & tumble — layered short noise bursts
+    for (let i = 0; i < 6; i++) {
+      noise(0.04, 0.35, i * 0.05, 5200 - i * 300);
+    }
+    // Hollow cup resonance
+    tone(140, 0.18, "sine", 0.08, 0.0);
+    tone(95, 0.22, "sine", 0.06, 0.05);
+    // Final landing clacks
+    noise(0.06, 0.5, 0.34, 4200);
+    noise(0.05, 0.4, 0.42, 3600);
+    tone(220, 0.08, "triangle", 0.1, 0.34);
+    tone(180, 0.07, "triangle", 0.08, 0.42);
   } else {
-    tone(200, 0.25, "sawtooth", 0.1);
-    tone(1800, 0.2, "sine", 0.06, 0.05);
+    // Synth: clean digital roll
+    for (let i = 0; i < 5; i++) {
+      tone(900 + i * 220, 0.05, "triangle", 0.07, i * 0.05);
+    }
+    tone(1600, 0.12, "sine", 0.08, 0.3);
+    tone(2200, 0.1, "sine", 0.06, 0.36);
   }
 }
 
