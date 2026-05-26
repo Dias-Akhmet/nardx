@@ -231,6 +231,7 @@ function Index() {
             onPurchase={setPurchaseTarget}
           />
         )}
+        {tab === "quests" && <Quests onPlay={() => setTab("play")} />}
         {tab === "leaderboard" && <Leaderboard />}
         {tab === "premium" && <Premium />}
       </main>
