@@ -59,12 +59,12 @@ export function GameReview({ result, onReplay }: Props) {
     ? `Excellent control. You held the head efficiently and your bear-off timing was clean. A ${you.mistakes} small mistakes cost tempo but never threatened the lead.`
     : `You played well, but a critical Blunder around move ${Math.max(4, Math.floor(result.moves / 2))} exposed your home board and cost you the game. Focus on safer pip distribution before opening the back point.`;
 
-  const rows: { label: string; you: number; opp: number; icon: any; color: string }[] = [
-    { label: "Brilliant", you: you.brilliant, opp: opp.brilliant, icon: Star, color: "text-cyan-400" },
-    { label: "Best", you: you.best, opp: opp.best, icon: CheckCircle2, color: "text-primary" },
-    { label: "Book", you: you.book, opp: opp.book, icon: BookOpen, color: "text-blue-400" },
-    { label: "Mistake", you: you.mistakes, opp: opp.mistakes, icon: AlertTriangle, color: "text-warning" },
-    { label: "Blunder", you: you.blunders, opp: opp.blunders, icon: XCircle, color: "text-destructive" },
+  const rows: { label: string; you: number; opp: number; icon: any; text: string; bg: string }[] = [
+    { label: "Brilliant", you: you.brilliant, opp: opp.brilliant, icon: Star, text: "text-cyan-400", bg: "bg-cyan-400" },
+    { label: "Best", you: you.best, opp: opp.best, icon: CheckCircle2, text: "text-primary", bg: "bg-primary" },
+    { label: "Book", you: you.book, opp: opp.book, icon: BookOpen, text: "text-blue-400", bg: "bg-blue-400" },
+    { label: "Mistake", you: you.mistakes, opp: opp.mistakes, icon: AlertTriangle, text: "text-warning", bg: "bg-warning" },
+    { label: "Blunder", you: you.blunders, opp: opp.blunders, icon: XCircle, text: "text-destructive", bg: "bg-destructive" },
   ];
 
   return (
