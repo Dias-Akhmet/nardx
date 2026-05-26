@@ -12,7 +12,7 @@ export interface GameState {
   dice: number[]; // remaining usable dice values
   rolled: [number, number] | null;
   turn: Player;
-  headUsedThisTurn: Player extends never ? never : { white: boolean; black: boolean };
+  headUsedThisTurn: { white: boolean; black: boolean };
   winner: Player | null;
   history: { player: Player; from: number; to: number | "off" }[];
 }
