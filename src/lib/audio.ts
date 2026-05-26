@@ -34,7 +34,8 @@ function tone(
   gain = 0.15,
   when = 0,
 ) {
-  if (muted) return;
+  // SFX always play — only background music respects the mute toggle.
+
   const c = getCtx();
   if (!c) return;
   const t0 = c.currentTime + when;
