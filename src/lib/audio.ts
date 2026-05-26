@@ -1,7 +1,11 @@
 // Web Audio API based sound system - skin-aware, no external deps.
-export type SkinId = "pixel" | "wood" | "neon";
+export type SkinId = "pixel" | "wood" | "minimal" | "neon" | "marble";
 
 let ctx: AudioContext | null = null;
+let muted = false;
+let musicNodes: { osc: OscillatorNode; gain: GainNode }[] = [];
+let musicTimer: number | null = null;
+
 function getCtx(): AudioContext | null {
   if (typeof window === "undefined") return null;
   if (!ctx) {
@@ -14,6 +18,14 @@ function getCtx(): AudioContext | null {
   return ctx;
 }
 
+export function setMuted(m: boolean) {
+  muted = m;
+  if (m) stopMusic();
+}
+export function isMuted() {
+  return muted;
+}
+
 function tone(
   freq: number,
   duration: number,
@@ -21,6 +33,7 @@ function tone(
   gain = 0.15,
   when = 0,
 ) {
+  if (muted) return;
   const c = getCtx();
   if (!c) return;
   const t0 = c.currentTime + when;
@@ -37,6 +50,7 @@ function tone(
 }
 
 function noise(duration: number, gain = 0.2, when = 0, filterFreq = 1200) {
+  if (muted) return;
   const c = getCtx();
   if (!c) return;
   const t0 = c.currentTime + when;
@@ -56,12 +70,21 @@ function noise(duration: number, gain = 0.2, when = 0, filterFreq = 1200) {
   src.stop(t0 + duration + 0.02);
 }
 
+// Map any skin to a sound family
+type SoundFamily = "chip" | "wood" | "synth";
+function family(skin: SkinId): SoundFamily {
+  if (skin === "pixel") return "chip";
+  if (skin === "neon") return "synth";
+  return "wood";
+}
+
 export function playMove(skin: SkinId) {
-  if (skin === "pixel") {
+  const f = family(skin);
+  if (f === "chip") {
     tone(880, 0.08, "square", 0.12);
     tone(1320, 0.06, "square", 0.08, 0.05);
-  } else if (skin === "wood") {
-    noise(0.18, 0.35, 0, 600);
+  } else if (f === "wood") {
+    noise(0.18, 0.3, 0, 600);
     tone(180, 0.1, "sine", 0.12);
   } else {
     tone(1400, 0.12, "sawtooth", 0.08);
@@ -70,9 +93,10 @@ export function playMove(skin: SkinId) {
 }
 
 export function playRoll(skin: SkinId) {
-  if (skin === "pixel") {
+  const f = family(skin);
+  if (f === "chip") {
     for (let i = 0; i < 4; i++) tone(440 + i * 220, 0.05, "square", 0.1, i * 0.05);
-  } else if (skin === "wood") {
+  } else if (f === "wood") {
     noise(0.35, 0.4, 0, 1400);
     noise(0.2, 0.3, 0.1, 900);
   } else {
@@ -82,9 +106,10 @@ export function playRoll(skin: SkinId) {
 }
 
 export function playBearOff(skin: SkinId) {
-  if (skin === "pixel") {
-    [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.1, "square", 0.12, i * 0.08));
-  } else if (skin === "wood") {
+  const f = family(skin);
+  if (f === "chip") {
+    [523, 659, 784, 1047].forEach((fr, i) => tone(fr, 0.1, "square", 0.12, i * 0.08));
+  } else if (f === "wood") {
     tone(440, 0.2, "sine", 0.12);
     tone(660, 0.25, "sine", 0.1, 0.08);
   } else {
@@ -94,12 +119,87 @@ export function playBearOff(skin: SkinId) {
 }
 
 export function playWin(skin: SkinId) {
-  const notes = skin === "pixel" ? [523, 659, 784, 1047, 1319] : [392, 523, 659, 784, 1047];
-  const wave: OscillatorType = skin === "pixel" ? "square" : skin === "neon" ? "sawtooth" : "triangle";
-  notes.forEach((f, i) => tone(f, 0.2, wave, 0.12, i * 0.12));
+  const f = family(skin);
+  const notes = f === "chip" ? [523, 659, 784, 1047, 1319] : [392, 523, 659, 784, 1047];
+  const wave: OscillatorType = f === "chip" ? "square" : f === "synth" ? "sawtooth" : "triangle";
+  notes.forEach((fr, i) => tone(fr, 0.2, wave, 0.12, i * 0.12));
+}
+
+// Crisp pleasant UI click
+export function playClick() {
+  if (muted) return;
+  const c = getCtx();
+  if (!c) return;
+  const t0 = c.currentTime;
+  const osc = c.createOscillator();
+  const g = c.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(1800, t0);
+  osc.frequency.exponentialRampToValueAtTime(900, t0 + 0.05);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.linearRampToValueAtTime(0.08, t0 + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.08);
+  osc.connect(g).connect(c.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.1);
 }
 
 export function resumeAudio() {
   const c = getCtx();
   if (c && c.state === "suspended") c.resume().catch(() => {});
+}
+
+// --- Ambient lo-fi background music (generative pad) ---
+const CHORDS = [
+  [220.0, 277.18, 329.63], // A minor
+  [196.0, 246.94, 293.66], // G major
+  [174.61, 220.0, 261.63], // F major
+  [164.81, 207.65, 246.94], // E minor
+];
+let chordIdx = 0;
+
+function playChord() {
+  const c = getCtx();
+  if (!c || muted) return;
+  // stop previous
+  musicNodes.forEach((n) => {
+    try { n.osc.stop(); } catch { /* ignore */ }
+  });
+  musicNodes = [];
+  const t0 = c.currentTime;
+  const notes = CHORDS[chordIdx % CHORDS.length];
+  chordIdx++;
+  for (const f of notes) {
+    const osc = c.createOscillator();
+    const g = c.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(f, t0);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.025, t0 + 1.2);
+    g.gain.linearRampToValueAtTime(0.018, t0 + 3.5);
+    g.gain.linearRampToValueAtTime(0.0, t0 + 4.2);
+    osc.connect(g).connect(c.destination);
+    osc.start(t0);
+    osc.stop(t0 + 4.3);
+    musicNodes.push({ osc, gain: g });
+  }
+}
+
+export function startMusic() {
+  if (muted) return;
+  resumeAudio();
+  if (musicTimer != null) return;
+  playChord();
+  musicTimer = window.setInterval(playChord, 4000);
+}
+
+export function stopMusic() {
+  if (musicTimer != null) {
+    clearInterval(musicTimer);
+    musicTimer = null;
+  }
+  musicNodes.forEach((n) => {
+    try { n.osc.stop(); } catch { /* ignore */ }
+  });
+  musicNodes = [];
 }
