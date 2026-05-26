@@ -1,10 +1,11 @@
-import { Play, Palette, Trophy, Crown, Brain } from "lucide-react";
+import { Play, Palette, Trophy, Crown, Brain, Target } from "lucide-react";
 
-export type Tab = "play" | "skins" | "leaderboard" | "premium" | "coach";
+export type Tab = "play" | "skins" | "leaderboard" | "premium" | "coach" | "quests";
 
 const items: { id: Tab; label: string; icon: typeof Play }[] = [
   { id: "play", label: "Play", icon: Play },
   { id: "coach", label: "AI Coach", icon: Brain },
+  { id: "quests", label: "Quests", icon: Target },
   { id: "skins", label: "Skins", icon: Palette },
   { id: "leaderboard", label: "Leaderboard", icon: Trophy },
   { id: "premium", label: "Premium", icon: Crown },

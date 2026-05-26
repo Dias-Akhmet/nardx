@@ -5,6 +5,7 @@ import { GameView, GameResult } from "@/components/backgammon/GameView";
 import { SKINS, SkinDef, SkinsGallery } from "@/components/backgammon/SkinsGallery";
 import { WelcomeScreen } from "@/components/backgammon/WelcomeScreen";
 import { GameReview } from "@/components/backgammon/GameReview";
+import { Quests } from "@/components/backgammon/Quests";
 import {
   SkinId,
   isMuted,
@@ -230,6 +231,7 @@ function Index() {
             onPurchase={setPurchaseTarget}
           />
         )}
+        {tab === "quests" && <Quests onPlay={() => setTab("play")} />}
         {tab === "leaderboard" && <Leaderboard />}
         {tab === "premium" && <Premium />}
       </main>

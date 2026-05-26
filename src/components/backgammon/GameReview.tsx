@@ -29,35 +29,29 @@ function genStats(seed: number, won: boolean): Stats {
 }
 
 export function GameReview({ result, onReplay }: Props) {
-  if (!result) {
-    return (
-      <div className="max-w-3xl mx-auto p-6">
-        <div className="flex items-center gap-2 mb-1">
-          <Brain className="h-7 w-7 text-primary" />
-          <h1 className="text-3xl font-bold">AI Coach</h1>
-        </div>
-        <p className="text-muted-foreground text-sm mb-8">
-          Post-match analysis powered by NardX engine — finish a game to unlock your review.
-        </p>
-        <div className="rounded-2xl border border-border bg-surface p-10 text-center">
-          <Sparkles className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-          <h2 className="font-semibold mb-1">No game to review yet</h2>
-          <p className="text-sm text-muted-foreground">
-            Play a match to get accuracy scores, move classification, and personalized coaching.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // If no real game finished yet, show a pre-populated Demo Match Analysis
+  // so judges & first-time visitors can immediately experience the feature.
+  const isDemo = !result;
+  const effective: GameResult = result ?? {
+    winner: "white",
+    byTimeout: false,
+    mode: "cpu",
+    moves: 38,
+  };
 
-  const youWon = result.winner === "white";
-  const seed = result.moves * 13 + (youWon ? 7 : 3);
-  const you = genStats(seed, youWon);
-  const opp = genStats(seed + 100, !youWon);
+  const youWon = effective.winner === "white";
+  const you: Stats = isDemo
+    ? { accuracy: 84, brilliant: 2, best: 14, book: 6, mistakes: 2, blunders: 1 }
+    : genStats(effective.moves * 13 + (youWon ? 7 : 3), youWon);
+  const opp: Stats = isDemo
+    ? { accuracy: 71, brilliant: 0, best: 10, book: 5, mistakes: 4, blunders: 2 }
+    : genStats(effective.moves * 13 + (youWon ? 7 : 3) + 100, !youWon);
 
-  const commentary = youWon
+  const commentary = isDemo
+    ? "Strong opening — you held the head efficiently and built a clean prime by move 9. You missed a critical block on move 14 that let Black escape the back point. Bear-off timing was excellent, sealing the win without further risk."
+    : youWon
     ? `Excellent control. You held the head efficiently and your bear-off timing was clean. A ${you.mistakes} small mistakes cost tempo but never threatened the lead.`
-    : `You played well, but a critical Blunder around move ${Math.max(4, Math.floor(result.moves / 2))} exposed your home board and cost you the game. Focus on safer pip distribution before opening the back point.`;
+    : `You played well, but a critical Blunder around move ${Math.max(4, Math.floor(effective.moves / 2))} exposed your home board and cost you the game. Focus on safer pip distribution before opening the back point.`;
 
   const rows: { label: string; you: number; opp: number; icon: any; text: string; bg: string }[] = [
     { label: "Brilliant", you: you.brilliant, opp: opp.brilliant, icon: Star, text: "text-cyan-400", bg: "bg-cyan-400" },
@@ -71,10 +65,10 @@ export function GameReview({ result, onReplay }: Props) {
     <div className="max-w-4xl mx-auto p-6 animate-fade-in">
       <div className="flex items-center gap-2 mb-1">
         <Brain className="h-7 w-7 text-primary" />
-        <h1 className="text-3xl font-bold">Game Review</h1>
+        <h1 className="text-3xl font-bold">{isDemo ? "Demo Match Analysis" : "Game Review"}</h1>
       </div>
       <p className="text-muted-foreground text-sm mb-6">
-        {youWon ? "Victory" : "Defeat"} · {result.mode === "cpu" ? "vs Computer" : result.mode === "online" ? "Online Match" : "Local Match"} · {result.moves} moves
+        {isDemo ? "Sample" : youWon ? "Victory" : "Defeat"} · {effective.mode === "cpu" ? "vs Bot" : effective.mode === "online" ? "Online Match" : "Local Match"} · {effective.moves} moves{isDemo && " · preview"}
       </p>
 
       {/* Accuracy bar */}
