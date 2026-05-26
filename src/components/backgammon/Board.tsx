@@ -1,4 +1,4 @@
-import { GameState, Player, Move, HEAD } from "@/lib/backgammon/engine";
+import { GameState, Player, Move } from "@/lib/backgammon/engine";
 
 interface BoardProps {
   state: GameState;
