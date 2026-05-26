@@ -5,6 +5,7 @@ import { GameView, GameResult } from "@/components/backgammon/GameView";
 import { SKINS, SkinDef, SkinsGallery } from "@/components/backgammon/SkinsGallery";
 import { WelcomeScreen } from "@/components/backgammon/WelcomeScreen";
 import { GameReview } from "@/components/backgammon/GameReview";
+import { Quests } from "@/components/backgammon/Quests";
 import {
   SkinId,
   isMuted,
