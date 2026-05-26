@@ -65,10 +65,10 @@ export function GameReview({ result, onReplay }: Props) {
     <div className="max-w-4xl mx-auto p-6 animate-fade-in">
       <div className="flex items-center gap-2 mb-1">
         <Brain className="h-7 w-7 text-primary" />
-        <h1 className="text-3xl font-bold">Game Review</h1>
+        <h1 className="text-3xl font-bold">{isDemo ? "Demo Match Analysis" : "Game Review"}</h1>
       </div>
       <p className="text-muted-foreground text-sm mb-6">
-        {youWon ? "Victory" : "Defeat"} · {result.mode === "cpu" ? "vs Computer" : result.mode === "online" ? "Online Match" : "Local Match"} · {result.moves} moves
+        {isDemo ? "Sample" : youWon ? "Victory" : "Defeat"} · {effective.mode === "cpu" ? "vs Bot" : effective.mode === "online" ? "Online Match" : "Local Match"} · {effective.moves} moves{isDemo && " · preview"}
       </p>
 
       {/* Accuracy bar */}
