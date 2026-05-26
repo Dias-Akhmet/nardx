@@ -178,7 +178,7 @@ export function Board(props: BoardProps) {
   );
 
   return (
-    <div className="w-full max-w-[880px] mx-auto">
+    <div className="w-full max-w-[720px] mx-auto">
       <div
         className="relative w-full bg-board-frame rounded-xl p-3 shadow-2xl"
         style={{ aspectRatio: "16 / 10" }}
