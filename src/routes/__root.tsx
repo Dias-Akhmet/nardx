@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "NardX" },
+      { name: "description", content: "NardX is a premium Long Backgammon platform featuring a sleek minimalist dark theme, responsive AI, post-game tactical analysis, daily quests, and unique audio-" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "NardX" },
+      { property: "og:description", content: "NardX is a premium Long Backgammon platform featuring a sleek minimalist dark theme, responsive AI, post-game tactical analysis, daily quests, and unique audio-" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "NardX" },
+      { name: "twitter:description", content: "NardX is a premium Long Backgammon platform featuring a sleek minimalist dark theme, responsive AI, post-game tactical analysis, daily quests, and unique audio-" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/OVb5tLZpmwXgJ7GoKCjfy91OMog2/social-images/social-1779795182407-2026-05-26_17-32-13.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/OVb5tLZpmwXgJ7GoKCjfy91OMog2/social-images/social-1779795182407-2026-05-26_17-32-13.webp" },
     ],
     links: [
       {
