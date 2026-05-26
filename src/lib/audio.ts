@@ -188,7 +188,7 @@ function playChord() {
 }
 
 export function startMusic() {
-  // SFX always plays
+  if (musicMuted) return;
   resumeAudio();
   if (musicTimer != null) return;
   playChord();
