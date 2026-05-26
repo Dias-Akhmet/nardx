@@ -52,7 +52,7 @@ function tone(
 }
 
 function noise(duration: number, gain = 0.2, when = 0, filterFreq = 1200) {
-  if (muted) return;
+  // SFX always plays
   const c = getCtx();
   if (!c) return;
   const t0 = c.currentTime + when;
@@ -129,7 +129,7 @@ export function playWin(skin: SkinId) {
 
 // Crisp pleasant UI click
 export function playClick() {
-  if (muted) return;
+  // SFX always plays
   const c = getCtx();
   if (!c) return;
   const t0 = c.currentTime;
@@ -162,7 +162,7 @@ let chordIdx = 0;
 
 function playChord() {
   const c = getCtx();
-  if (!c || muted) return;
+  if (!c || musicMuted) return;
   // stop previous
   musicNodes.forEach((n) => {
     try { n.osc.stop(); } catch { /* ignore */ }
@@ -188,7 +188,7 @@ function playChord() {
 }
 
 export function startMusic() {
-  if (muted) return;
+  // SFX always plays
   resumeAudio();
   if (musicTimer != null) return;
   playChord();
