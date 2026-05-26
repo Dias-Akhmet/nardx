@@ -2,7 +2,8 @@
 export type SkinId = "pixel" | "wood" | "minimal" | "neon" | "marble";
 
 let ctx: AudioContext | null = null;
-let muted = false;
+// Music-only mute. SFX (clicks, moves, dice, bear off) always remain audible.
+let musicMuted = false;
 let musicNodes: { osc: OscillatorNode; gain: GainNode }[] = [];
 let musicTimer: number | null = null;
 
@@ -19,11 +20,11 @@ function getCtx(): AudioContext | null {
 }
 
 export function setMuted(m: boolean) {
-  muted = m;
+  musicMuted = m;
   if (m) stopMusic();
 }
 export function isMuted() {
-  return muted;
+  return musicMuted;
 }
 
 function tone(
