@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar, Tab } from "@/components/backgammon/Sidebar";
 import { GameView, GameResult } from "@/components/backgammon/GameView";
 import { SKINS, SkinDef, SkinsGallery } from "@/components/backgammon/SkinsGallery";
