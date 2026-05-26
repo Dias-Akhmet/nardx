@@ -1,9 +1,10 @@
-import { Play, Palette, Trophy, Crown } from "lucide-react";
+import { Play, Palette, Trophy, Crown, Brain } from "lucide-react";
 
-export type Tab = "play" | "skins" | "leaderboard" | "premium";
+export type Tab = "play" | "skins" | "leaderboard" | "premium" | "coach";
 
 const items: { id: Tab; label: string; icon: typeof Play }[] = [
   { id: "play", label: "Play", icon: Play },
+  { id: "coach", label: "AI Coach", icon: Brain },
   { id: "skins", label: "Skins", icon: Palette },
   { id: "leaderboard", label: "Leaderboard", icon: Trophy },
   { id: "premium", label: "Premium", icon: Crown },
@@ -16,7 +17,9 @@ export function Sidebar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => voi
         <div className="h-9 w-9 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-black">
           N
         </div>
-        <span className="hidden lg:inline ml-3 font-semibold tracking-tight">Nardy</span>
+        <span className="hidden lg:inline ml-3 font-semibold tracking-tight text-lg">
+          Nard<span className="text-primary">X</span>
+        </span>
       </div>
       <nav className="flex-1 py-3">
         {items.map(({ id, label, icon: Icon }) => {
@@ -38,7 +41,7 @@ export function Sidebar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => voi
         })}
       </nav>
       <div className="p-3 text-[10px] text-muted-foreground hidden lg:block">
-        v1.0 · Long Backgammon
+        NardX · v1.0
       </div>
     </aside>
   );

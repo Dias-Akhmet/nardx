@@ -1,16 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar, Tab } from "@/components/backgammon/Sidebar";
-import { GameView } from "@/components/backgammon/GameView";
+import { GameView, GameResult } from "@/components/backgammon/GameView";
 import { SKINS, SkinDef, SkinsGallery } from "@/components/backgammon/SkinsGallery";
-import { SkinId } from "@/lib/audio";
-import { Trophy, Crown, Sparkles, X } from "lucide-react";
+import { WelcomeScreen } from "@/components/backgammon/WelcomeScreen";
+import { GameReview } from "@/components/backgammon/GameReview";
+import {
+  SkinId,
+  isMuted,
+  playClick,
+  resumeAudio,
+  setMuted,
+  startMusic,
+  stopMusic,
+} from "@/lib/audio";
+import { Trophy, Crown, Sparkles, X, Volume2, VolumeX } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nardy — Long Backgammon" },
-      { name: "description", content: "Premium long backgammon (Nardy) with AI opponent, timed matches and unlockable skins." },
+      { title: "NardX — Premium Long Backgammon" },
+      {
+        name: "description",
+        content:
+          "NardX is a premium long backgammon (Nardy) experience with AI coach, online rooms, and unlockable board skins.",
+      },
+      { property: "og:title", content: "NardX — Premium Long Backgammon" },
+      {
+        property: "og:description",
+        content: "Play premium long backgammon with AI, online rooms, and custom skins.",
+      },
     ],
   }),
   component: Index,
@@ -30,7 +49,7 @@ function Leaderboard() {
       <h1 className="text-3xl font-bold mb-1 flex items-center gap-2">
         <Trophy className="h-7 w-7 text-warning" /> Leaderboard
       </h1>
-      <p className="text-muted-foreground text-sm mb-6">Top long backgammon players this season.</p>
+      <p className="text-muted-foreground text-sm mb-6">Top NardX players this season.</p>
       <div className="rounded-xl border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-surface text-xs uppercase text-muted-foreground">
@@ -74,7 +93,7 @@ function Premium() {
     <div className="max-w-3xl mx-auto p-6">
       <div className="rounded-2xl border border-warning/40 bg-gradient-to-br from-warning/10 to-transparent p-8">
         <Crown className="h-10 w-10 text-warning mb-3" />
-        <h1 className="text-3xl font-bold">Nardy Premium</h1>
+        <h1 className="text-3xl font-bold">NardX Premium</h1>
         <p className="text-muted-foreground mt-2">Unlock the full experience for $9.99/month.</p>
         <ul className="mt-6 space-y-2">
           {perks.map((p) => (
@@ -83,7 +102,7 @@ function Premium() {
             </li>
           ))}
         </ul>
-        <button className="mt-8 w-full py-3 rounded-lg bg-warning text-zinc-900 font-bold hover:brightness-110 transition">
+        <button className="mt-8 w-full py-3 rounded-lg bg-warning text-zinc-900 font-bold">
           Start 7-Day Free Trial
         </button>
       </div>
@@ -91,7 +110,11 @@ function Premium() {
   );
 }
 
-function PurchaseModal({ skin, onClose, onConfirm }: {
+function PurchaseModal({
+  skin,
+  onClose,
+  onConfirm,
+}: {
   skin: SkinDef | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -117,7 +140,7 @@ function PurchaseModal({ skin, onClose, onConfirm }: {
         </div>
         <button
           onClick={onConfirm}
-          className="w-full py-2.5 rounded-md bg-primary text-primary-foreground font-semibold hover:brightness-110 transition"
+          className="w-full py-2.5 rounded-md bg-primary text-primary-foreground font-semibold"
         >
           Simulate Purchase
         </button>
@@ -130,10 +153,58 @@ function PurchaseModal({ skin, onClose, onConfirm }: {
 }
 
 function Index() {
+  const [entered, setEntered] = useState(false);
   const [tab, setTab] = useState<Tab>("play");
-  const [skin, setSkin] = useState<SkinId>("pixel");
-  const [owned, setOwned] = useState<Set<SkinId>>(new Set(["pixel"]));
+  const [skin, setSkin] = useState<SkinId>("wood");
+  const [owned, setOwned] = useState<Set<SkinId>>(
+    new Set<SkinId>(["wood", "pixel", "minimal"]),
+  );
   const [purchaseTarget, setPurchaseTarget] = useState<SkinDef | null>(null);
+  const [muted, setMutedState] = useState(false);
+  const [lastResult, setLastResult] = useState<GameResult | null>(null);
+
+  // Global UI click sound
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const btn = target.closest("button");
+      if (btn && !(btn as HTMLButtonElement).disabled) {
+        resumeAudio();
+        playClick();
+      }
+    };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, []);
+
+  // Sync muted module flag with state
+  useEffect(() => {
+    setMuted(muted);
+    if (!muted && entered) startMusic();
+    else stopMusic();
+  }, [muted, entered]);
+
+  // Initialize muted from module on mount
+  useEffect(() => {
+    setMutedState(isMuted());
+  }, []);
+
+  const handleEnter = (s: SkinId) => {
+    setSkin(s);
+    setEntered(true);
+    resumeAudio();
+    if (!muted) startMusic();
+  };
+
+  if (!entered) {
+    return (
+      <>
+        <WelcomeScreen onEnter={handleEnter} owned={owned} />
+        <MuteToggle muted={muted} onToggle={() => setMutedState((m) => !m)} />
+      </>
+    );
+  }
 
   const skinClass = `skin-${skin}`;
 
@@ -141,7 +212,16 @@ function Index() {
     <div className={`flex h-screen w-full bg-background text-foreground ${skinClass}`}>
       <Sidebar tab={tab} onChange={setTab} />
       <main className="flex-1 flex flex-col min-w-0">
-        {tab === "play" && <GameView skin={skin} />}
+        {tab === "play" && (
+          <GameView
+            skin={skin}
+            onGameEnd={(r) => setLastResult(r)}
+            onReview={() => setTab("coach")}
+          />
+        )}
+        {tab === "coach" && (
+          <GameReview result={lastResult} onReplay={() => setTab("play")} />
+        )}
         {tab === "skins" && (
           <SkinsGallery
             active={skin}
@@ -164,10 +244,27 @@ function Index() {
           }
         }}
       />
+      <MuteToggle muted={muted} onToggle={() => setMutedState((m) => !m)} />
       {/* Ensure all skin classes are emitted */}
-      <div className="hidden skin-pixel skin-wood skin-neon" />
+      <div className="hidden skin-pixel skin-wood skin-minimal skin-neon skin-marble" />
     </div>
   );
 }
-// Reference imports to avoid unused warnings
+
+function MuteToggle({ muted, onToggle }: { muted: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-label={muted ? "Unmute" : "Mute"}
+      className="fixed top-4 right-4 z-[60] h-10 w-10 rounded-full bg-surface border border-border flex items-center justify-center shadow-lg"
+    >
+      {muted ? (
+        <VolumeX className="h-4 w-4 text-muted-foreground" />
+      ) : (
+        <Volume2 className="h-4 w-4 text-primary" />
+      )}
+    </button>
+  );
+}
+
 void SKINS;

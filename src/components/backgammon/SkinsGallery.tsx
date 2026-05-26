@@ -7,11 +7,20 @@ export interface SkinDef {
   tagline: string;
   price: string;
   free: boolean;
-  preview: string; // class for color preview
+  preview: string;
   description: string;
 }
 
 export const SKINS: SkinDef[] = [
+  {
+    id: "wood",
+    name: "Classic Wood",
+    tagline: "Heritage tournament felt",
+    price: "FREE",
+    free: true,
+    preview: "bg-gradient-to-br from-amber-800 via-amber-600 to-amber-900",
+    description: "Walnut and maple board with weighty wooden thuds and a deep dice-rattle.",
+  },
   {
     id: "pixel",
     name: "Pixel Retro",
@@ -19,16 +28,16 @@ export const SKINS: SkinDef[] = [
     price: "FREE",
     free: true,
     preview: "bg-gradient-to-br from-fuchsia-500 via-amber-400 to-cyan-400",
-    description: "Pixelated arcade board with chiptune blips, retro selects, and level-up chimes inspired by Balatro.",
+    description: "Pixelated arcade board with chiptune blips and retro selects.",
   },
   {
-    id: "wood",
-    name: "Classic Wood",
-    tagline: "Heritage tournament felt",
-    price: "$4.99",
-    free: false,
-    preview: "bg-gradient-to-br from-amber-800 via-amber-600 to-amber-900",
-    description: "Walnut and maple board with weighty wooden thuds and a deep dice-rattle.",
+    id: "minimal",
+    name: "Minimalist Smooth",
+    tagline: "Modern monochrome",
+    price: "FREE",
+    free: true,
+    preview: "bg-gradient-to-br from-zinc-300 via-zinc-500 to-zinc-800",
+    description: "Quiet monochrome surface with refined typography and crisp lines.",
   },
   {
     id: "neon",
@@ -38,6 +47,15 @@ export const SKINS: SkinDef[] = [
     free: false,
     preview: "bg-gradient-to-br from-cyan-400 via-fuchsia-500 to-indigo-600",
     description: "Neon grids with synthetic laser sweeps and futuristic interface beeps.",
+  },
+  {
+    id: "marble",
+    name: "Royal Marble",
+    tagline: "Ivory and onyx",
+    price: "$7.99",
+    free: false,
+    preview: "bg-gradient-to-br from-stone-100 via-stone-300 to-stone-700",
+    description: "Polished marble surfaces with gold inlays and a regal acoustic feel.",
   },
 ];
 
@@ -54,7 +72,7 @@ export function SkinsGallery({ active, owned, onSelect, onPurchase }: Props) {
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Skins</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Cosmetic boards with their own sound packs. One is free — others unlock with a one-time purchase.
+          Cosmetic boards with their own sound packs. Three are free — premium skins unlock with a one-time purchase.
         </p>
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -92,7 +110,7 @@ export function SkinsGallery({ active, owned, onSelect, onPurchase }: Props) {
                     <button
                       onClick={() => onSelect(s.id)}
                       disabled={isActive}
-                      className="w-full py-2 rounded-md bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition flex items-center justify-center gap-2"
+                      className="w-full py-2 rounded-md bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {isActive ? (
                         <>
@@ -105,7 +123,7 @@ export function SkinsGallery({ active, owned, onSelect, onPurchase }: Props) {
                   ) : (
                     <button
                       onClick={() => onPurchase(s)}
-                      className="w-full py-2 rounded-md bg-surface-2 hover:bg-secondary text-sm font-semibold transition"
+                      className="w-full py-2 rounded-md bg-surface-2 hover:bg-secondary text-sm font-semibold"
                     >
                       Unlock for {s.price}
                     </button>
