@@ -164,7 +164,6 @@ function Index() {
   const [lastResult, setLastResult] = useState<GameResult | null>(null);
 
   // Global UI click sound
-  const clickHandlerRef = useRef<(e: MouseEvent) => void>();
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
@@ -175,7 +174,6 @@ function Index() {
         playClick();
       }
     };
-    clickHandlerRef.current = handler;
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
   }, []);
